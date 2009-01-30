@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="dojo-release-1.2.3/dojo/dojo.js"></script>
+  <script src="twirlymol.js"></script>
+  <script src="250.js"></script>
+<link rel="stylesheet" href="style.css"/></head>
+<body><h1>TwirlyMol</h1>
+<h2>A minimal molecular viewer</h2>
+<p>Click and drag to rotate (left mouse button), zoom/twist (right button) or translate (middle button).</p>
+<div id="bigmol" width="400" height="400">
+</div>
+<script type="text/javascript">
+function mysetup() {
+  var sdfs = sdf.split("$$$$\n");
+  var bigmol = dojo.byId("bigmol");
+  var mol = parseSD(sdfs[3]);
+  twirlyMol("bigmol", mol.atoms, mol.bonds, mol.elements);
+}
+window.onload = mysetup;
+</script></p>
+</body>
+</html>
