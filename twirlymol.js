@@ -65,11 +65,11 @@ function tl_drawBonds(p) {
   for(var i=0; i< p.bonds.length; i++) {
     start = p.bonds[i][0];
     end = p.bonds[i][1];
-    dx =  p.coords[end][0] - p.coords[start][0];
-    dy =  p.coords[start][1] - p.coords[end][1]; // (0,0) is in top left
-    len = Math.sqrt(dx*dx + dy*dy) * p.scale;
-    angle = -Math.atan2(dy, dx); // rotation is clockwise from 3 o'clock
-    p.lines[i].setTransform([{dx:p.coords[start][0] * p.scale + p.centre.x, dy:p.coords[start][1] * p.scale + p.centre.y, xx:len, yy:len}, dojox.gfx.matrix.rotate(angle)]);
+    p.lines[i].setShape({x1:p.coords[start][0] * p.scale + p.centre.x,
+		         y1:p.coords[start][1] * p.scale + p.centre.y,
+			 x2:p.coords[end][0] * p.scale + p.centre.x,
+			 y2:p.coords[end][1] * p.scale + p.centre.y})
+	      .setStroke({width:p.scale / 10});
   }
 }
 function tl_createShadows(p) {
