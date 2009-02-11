@@ -94,21 +94,24 @@ function tl_createAtoms(p) {
 				.setFill([255, 255, 255, 1]);
   }
 }
+function tl_zorder(a, b) {
+	var x = a.depth;
+	var y = b.depth;
+	return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+}
 function tl_drawAtoms(p) {
-  var depth = Array(p.coords.length);
-  var scale = p.scale * 0.05;
-  for(var i=0;i<p.coords.length;i++) depth[i] = p.coords[i][2];
-  for(i=0; i < p.coords.length; i++) {
-    var max = 0;
-    for(var j=0; j < p.coords.length; j++) {
-      if(depth[j] < depth[max]) {
-        max = j;
-      }
-    }
-    depth[max] = +9999;
+  // Z-Order
+	var temp = Array(p.coords.length);
+	/*for (var i=0;i<p.coords.length;i++)
+	 	temp[i] = {idx: i, depth: p.coords[i][2]};
+	temp.sort(tl_zorder);
 
+  var scale = p.scale * 0.05;
+
+	for (i=0; i<p.coords.length;i++) {
+		var max = temp[i].idx;
     p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
-  }
+	}*/
 }
 function tl_drawShadows(p) {
   var y;
