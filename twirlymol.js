@@ -97,12 +97,12 @@ function tl_createAtoms(p) {
 function tl_zorder(a, b) {
 	var x = a.depth;
 	var y = b.depth;
-	return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+	return ((x < y) ? 1 : ((x > y) ? -1 : 0));
 }
 function tl_drawAtoms(p) {
   // Z-Order
 	var temp = Array(p.coords.length);
-	/*for (var i=0;i<p.coords.length;i++)
+	for (var i=0;i<p.coords.length;i++)
 	 	temp[i] = {idx: i, depth: p.coords[i][2]};
 	temp.sort(tl_zorder);
 
@@ -111,7 +111,7 @@ function tl_drawAtoms(p) {
 	for (i=0; i<p.coords.length;i++) {
 		var max = temp[i].idx;
     p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
-	}*/
+	}
 }
 function tl_drawShadows(p) {
   var y;
@@ -165,8 +165,8 @@ tl_onMouseMove = function(evt){
    var mx = evt.clientX - p.container_pos.x;
    var my = evt.clientY - p.container_pos.y;
    if (p.mymousedown == tl_mouse.left) {
-     p.angles[0] = p.anglesorigin[0] + (p.dragorigin[1] - my)/(p.height / 5);
-     p.angles[1] = p.anglesorigin[1] + (p.dragorigin[0] - mx)/(p.width / 5);
+     p.angles[0] = p.anglesorigin[0] + (my - p.dragorigin[1])/(p.height / 5);
+     p.angles[1] = p.anglesorigin[1] + (mx - p.dragorigin[0])/(p.width / 5);
    }
    else if (p.mymousedown == tl_mouse.middle) {
      p.centre.x = p.width/2 + mx - p.dragorigin[0];
