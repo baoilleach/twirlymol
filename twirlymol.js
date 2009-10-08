@@ -41,7 +41,8 @@ function parseSD(sdf) {
   for (i=4 + Natoms;i<(Nbonds+Natoms+4);i++) {
     var s = parseFloat(lines[i].substring(0, 3)) - 1;
     var e = parseFloat(lines[i].substring(3, 6)) - 1;
-    bonds[i-4-Natoms] = [s, e];
+    var order = parseFloat(lines[i].substring(6, 9));
+    bonds[i-4-Natoms] = [s, e, order];
   }
   var molecule = {atoms: atoms, bonds: bonds, elements: elements};
   return molecule;
@@ -65,11 +66,12 @@ function tl_drawBonds(p) {
   for(var i=0; i< p.bonds.length; i++) {
     start = p.bonds[i][0];
     end = p.bonds[i][1];
+    order = p.bonds[i][2];
     p.lines[i].setShape({x1:p.coords[start][0] * p.scale + p.centre.x,
 		         y1:p.coords[start][1] * p.scale + p.centre.y,
 			 x2:p.coords[end][0] * p.scale + p.centre.x,
 			 y2:p.coords[end][1] * p.scale + p.centre.y})
-	      .setStroke({width:p.scale / 10});
+	      .setStroke({width:p.scale * ((order-1)*2+1) / 10});
   }
 }
 function tl_createShadows(p) {
