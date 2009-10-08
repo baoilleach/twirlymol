@@ -68,10 +68,10 @@ function tl_drawBonds(p) {
     end = p.bonds[i][1];
     order = p.bonds[i][2];
     p.lines[i].setShape({x1:p.coords[start][0] * p.scale + p.centre.x,
-		         y1:p.coords[start][1] * p.scale + p.centre.y,
-			 x2:p.coords[end][0] * p.scale + p.centre.x,
-			 y2:p.coords[end][1] * p.scale + p.centre.y})
-	      .setStroke({width:p.scale * ((order-1)*2+1) / 10});
+             y1:p.coords[start][1] * p.scale + p.centre.y,
+       x2:p.coords[end][0] * p.scale + p.centre.x,
+       y2:p.coords[end][1] * p.scale + p.centre.y})
+        .setStroke({width:p.scale * ((order-1)*2+1) / 10});
   }
 }
 function tl_createShadows(p) {
@@ -80,7 +80,7 @@ function tl_createShadows(p) {
     if (p.elements[i]==1) radius = radius / 2;
     p.shadows[i] = p.surface.createEllipse({cx: 0, cy: 0,
                                             rx: radius, ry: radius / 3})
-				.setFill([180, 180, 180, 1]);
+        .setFill([180, 180, 180, 1]);
   }
 }
 function tl_createAtoms(p) {
@@ -91,29 +91,43 @@ function tl_createAtoms(p) {
 
     p.spheres[i] = p.surface.createGroup();
     p.spheres[i].createCircle({cx: 0, cy: 0, r: radius})
-				.setFill([col[0], col[1], col[2], 1]);
+        .setFill([col[0], col[1], col[2], 1]);
     if (p.elements[i]!=1) p.spheres[i].createCircle({cx: - 2, cy: -3, r: radius * 0.1})
-				.setFill([255, 255, 255, 1]);
+        .setFill([255, 255, 255, 1]);
   }
 }
 function tl_zorder(a, b) {
-	var x = a.depth;
-	var y = b.depth;
-	return ((x < y) ? 1 : ((x > y) ? -1 : 0));
+  var x = a.depth;
+  var y = b.depth;
+  return ((x < y) ? 1 : ((x > y) ? -1 : 0));
 }
 function tl_drawAtoms(p) {
   // Z-Order
-	var temp = Array(p.coords.length);
-	for (var i=0;i<p.coords.length;i++)
-	 	temp[i] = {idx: i, depth: p.coords[i][2]};
-	temp.sort(tl_zorder);
+  var temp = Array(p.coords.length);
+  for (var i=0;i<p.coords.length;i++)
+     temp[i] = {idx: i, depth: p.coords[i][2]};
+  temp.sort(tl_zorder);
 
   var scale = p.scale * 0.05;
 
-	for (i=0; i<p.coords.length;i++) {
-		var max = temp[i].idx;
+  for (i=0; i<p.coords.length;i++) {
+    var max = temp[i].idx;
     p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
-	}
+  }
+}
+function tl_drawAtomsAndBonds(p) {
+  // Z-Order
+  var temp = Array(p.coords.length);
+  for (var i=0;i<p.coords.length;i++)
+     temp[i] = {idx: i, depth: p.coords[i][2]};
+  temp.sort(tl_zorder);
+
+  var scale = p.scale * 0.05;
+
+  for (i=0; i<p.coords.length;i++) {
+    var max = temp[i].idx;
+    p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
+  }
 }
 function tl_drawShadows(p) {
   var y;
