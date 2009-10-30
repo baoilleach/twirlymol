@@ -57,23 +57,6 @@ function tl_createBonds(p) {
                          .setFill([0, 0, 0, 1]).setStroke({color:[0,0,0,1], width:0.05});
   }
 }
-function tl_drawBonds(p) {
-  var start;
-  var end;
-  var len;
-  var dx;
-  var dy;
-  for(var i=0; i< p.bonds.length; i++) {
-    start = p.bonds[i][0];
-    end = p.bonds[i][1];
-    order = p.bonds[i][2];
-    p.lines[i].setShape({x1:p.coords[start][0] * p.scale + p.centre.x,
-             y1:p.coords[start][1] * p.scale + p.centre.y,
-       x2:p.coords[end][0] * p.scale + p.centre.x,
-       y2:p.coords[end][1] * p.scale + p.centre.y})
-        .setStroke({width:p.scale * ((order-1)*2+1) / 10});
-  }
-}
 function tl_createShadows(p) {
   for(var i=0;i<p.coords.length;i++) {
     var radius = 6;
@@ -101,32 +84,42 @@ function tl_zorder(a, b) {
   var y = b.depth;
   return ((x < y) ? 1 : ((x > y) ? -1 : 0));
 }
-function tl_drawAtoms(p) {
-  // Z-Order
-  var temp = Array(p.coords.length);
-  for (var i=0;i<p.coords.length;i++)
-     temp[i] = {idx: i, depth: p.coords[i][2]};
-  temp.sort(tl_zorder);
-
-  var scale = p.scale * 0.05;
-
-  for (i=0; i<p.coords.length;i++) {
-    var max = temp[i].idx;
-    p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
-  }
-}
 function tl_drawAtomsAndBonds(p) {
-  // Z-Order
-  var temp = Array(p.coords.length);
+  // Add atoms
+  var temp = Array(p.coords.length + p.bonds.length);
   for (var i=0;i<p.coords.length;i++)
-     temp[i] = {idx: i, depth: p.coords[i][2]};
+    temp[i] = {idx: i, type: "atom", depth: p.coords[i][2]};
+  // Add bonds
+  for (var i=0;i<p.bonds.length; i++) {
+    start = p.bonds[i][0];
+    end = p.bonds[i][1];
+    temp[i + p.coords.length] = {idx: i, type: "bond", depth: (p.coords[start][2] + p.coords[end][2])/2};
+  }
+  // Z-Order
   temp.sort(tl_zorder);
 
   var scale = p.scale * 0.05;
 
-  for (i=0; i<p.coords.length;i++) {
+  for (i=0; i<temp.length; i++) {
     var max = temp[i].idx;
-    p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
+    if (temp[i].type == "atom")
+      p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
+    else {
+      start = p.coords[p.bonds[max][0]];
+      end = p.coords[p.bonds[max][1]];
+      order = p.bonds[max][2];
+      rstart = Array(3);
+      rend = Array(3);
+      for(var j=0; j<3; j++) {
+        rstart[j] = (end[j] - start[j]) / 3 + start[j];
+        rend[j] = end[j] - (end[j] - start[j]) / 3;
+      }
+      p.lines[max].setShape({x1:rstart[0] * p.scale + p.centre.x,
+                           y1:rstart[1] * p.scale + p.centre.y,
+                           x2:rend[0] * p.scale + p.centre.x,
+                           y2:rend[1] * p.scale + p.centre.y})
+                   .setStroke({width:p.scale * ((order-1)*2+1) / 10}).moveToFront();
+    }
   }
 }
 function tl_drawShadows(p) {
@@ -197,8 +190,7 @@ tl_onMouseMove = function(evt){
 function tl_draw(p) {
    tl_rotateAround(p);
    tl_drawShadows(p);
-   tl_drawBonds(p);
-   tl_drawAtoms(p);
+   tl_drawAtomsAndBonds(p);
 }
 function tl_centreMol(p) {
   var size = p.width;
