@@ -42,7 +42,8 @@ function parseSD(sdf) {
     var s = parseFloat(lines[i].substring(0, 3)) - 1;
     var e = parseFloat(lines[i].substring(3, 6)) - 1;
     var order = parseFloat(lines[i].substring(6, 9));
-    bonds[i-4-Natoms] = [s, e, order];
+    bondlen = Math.sqrt(Math.pow(atoms[e][0]-atoms[s][0],2) + Math.pow(atoms[e][1]-atoms[s][1],2) + Math.pow(atoms[e][2]-atoms[s][2],2));
+    bonds[i-4-Natoms] = [s, e, order, bondlen];
   }
   var molecule = {atoms: atoms, bonds: bonds, elements: elements};
   return molecule;
@@ -98,21 +99,29 @@ function tl_drawAtomsAndBonds(p) {
   // Z-Order
   temp.sort(tl_zorder);
 
+  var start, end, order, startrad, endrad;
+  var bondlen, rstart, rend;
   var scale = p.scale * 0.05;
 
   for (i=0; i<temp.length; i++) {
     var max = temp[i].idx;
-    if (temp[i].type == "atom")
+    if (temp[i].type == "atom") // Draw atom
       p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
-    else {
+    else { // Draw bond
       start = p.coords[p.bonds[max][0]];
       end = p.coords[p.bonds[max][1]];
       order = p.bonds[max][2];
+      startrad = 0.5; endrad = 0.5;
+      if (p.elements[p.bonds[max][0]] == 1) startrad = 0.25;
+      if (p.elements[p.bonds[max][1]] == 1)   endrad = 0.25;
+      bondlen = p.bonds[max][3];
+      startrad /= bondlen; endrad /= bondlen;
       rstart = Array(3);
       rend = Array(3);
       for(var j=0; j<3; j++) {
-        rstart[j] = (end[j] - start[j]) / 3 + start[j];
-        rend[j] = end[j] - (end[j] - start[j]) / 3;
+        dx = end[j] - start[j];
+        rstart[j] = startrad*dx + start[j];
+        rend[j] = end[j] - endrad*dx;
       }
       p.lines[max].setShape({x1:rstart[0] * p.scale + p.centre.x,
                            y1:rstart[1] * p.scale + p.centre.y,
