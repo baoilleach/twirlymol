@@ -155,6 +155,11 @@ tl_onContextMenu = function(evt){
    evt.preventDefault();
    dojo.stopEvent(evt);
 }
+tl_onMouseScroll = function(evt){
+  var scroll = evt[(!dojo.isMozilla ? "wheelDelta" : "detail")] * (!dojo.isMozilla ? 1 : -1);
+  this.p.scale += scroll;
+  tl_draw(this.p);
+}
 tl_onMouseDown = function(evt){
    var p = this.p;
    p.mymousedown = evt.button;
@@ -286,4 +291,5 @@ function twirlyMol(elemID, atoms, bonds, elements){
   dojo.connect(container, "oncontextmenu", tl_onContextMenu);
   dojo.connect(container, "onmouseup", tl_onMouseUp);
   dojo.connect(container, "onmousedown", tl_onMouseDown);
+  dojo.connect(container, (!dojo.isMozilla ? "onmousewheel" : "DOMMouseScroll"), tl_onMouseScroll);
 }
