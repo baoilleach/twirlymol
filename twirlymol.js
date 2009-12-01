@@ -156,7 +156,7 @@ tl_onContextMenu = function(evt){
    dojo.stopEvent(evt);
 }
 tl_onMouseScroll = function(evt){
-  var scroll = evt[(!dojo.isMozilla ? "wheelDelta" : "detail")] * (!dojo.isMozilla ? 1 : -1);
+  var scroll = evt[(!dojo.isMozilla ? "wheelDelta" : "detail")] * (!dojo.isMozilla ? 0.03333 : -1);
   this.p.scale += scroll;
   tl_draw(this.p);
 }
