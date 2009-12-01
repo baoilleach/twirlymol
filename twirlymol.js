@@ -205,6 +205,10 @@ function tl_draw(p) {
    tl_rotateAround(p);
    tl_drawShadows(p);
    tl_drawAtomsAndBonds(p);
+   if (window.opera) {
+	   p.surface.setDimensions(p.width + 1, p.height + 1);
+	   p.surface.setDimensions(p.width, p.height);
+   }
 }
 function tl_centreMol(p) {
   var size = p.width;
@@ -276,7 +280,7 @@ function twirlyMol(elemID, atoms, bonds, elements){
   container.p = {angles: [0, 0, 0], elements:elements,
        surface: surface, atoms:atoms, bonds:bonds,
        scale: min(h,w) / 20, width:w, height:h,
-       coords:coords, mousedown:-1, container_pos:container_pos,
+       coords:coords, mymousedown:-1, container_pos:container_pos,
        centre:centre};
   var sizes = tl_centreMol(container.p);
   container.p.range = sizes.range;
