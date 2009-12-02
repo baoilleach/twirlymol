@@ -73,11 +73,18 @@ function tl_createAtoms(p) {
     var radius = 10; // Using a radius < 1 causes an error in IE
     if (p.elements[i]==1) radius = radius / 2;
 
-    p.spheres[i] = p.surface.createGroup();
+    p.spheres[i] = p.surface.createCircle({cx: 0, cy: 0, r: radius});
+    if (p.elements[i]!=1)
+        p.spheres[i].setFill({type:"radial", cx:-2, cy:-3, r:radius/1.5,
+		  colors:[{color:"white", offset:0},
+		          {color:[col[0], col[1], col[2], 1], offset:1}]});
+    else
+        p.spheres[i].setFill([255, 255, 255,1]);
+    /*p.spheres[i] = p.surface.createGroup();
     p.spheres[i].createCircle({cx: 0, cy: 0, r: radius})
         .setFill([col[0], col[1], col[2], 1]);
     if (p.elements[i]!=1) p.spheres[i].createCircle({cx: - 2, cy: -3, r: radius * 0.1})
-        .setFill([255, 255, 255, 1]);
+        .setFill([255, 255, 255, 1]);*/
   }
 }
 function tl_zorder(a, b) {
