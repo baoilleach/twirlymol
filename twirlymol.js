@@ -112,8 +112,14 @@ function tl_drawAtomsAndBonds(p) {
 
   for (i=0; i<temp.length; i++) {
     var max = temp[i].idx;
-    if (temp[i].type == "atom") // Draw atom
-      p.spheres[max].setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
+    if (temp[i].type == "atom") { // Draw atom
+          var sphere = p.spheres[max];
+          sphere.setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
+          var col = tl_CPK[p.elements[max]];
+          sphere.setFill({type:"radial", cx:-2, cy:-3, r:(p.coords[max][2] / 5 + 1) * p.scale,
+		  colors:[{color:"white", offset:0},
+		          {color:[col[0], col[1], col[2], 1], offset:1}]});
+    }
     else { // Draw bond
       start = p.coords[p.bonds[max][0]];
       end = p.coords[p.bonds[max][1]];
