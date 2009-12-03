@@ -152,7 +152,7 @@ function tl_drawShadows(p) {
       size = (1-y) * scale;
       if(alpha<0) alpha=0;
     }
-    p.shadows[i].setTransform({dx: p.coords[i][0] * p.scale + p.centre.x, dy: (p.coords[i][2] /5 + p.range*0.75) * p.scale + p.centre.y, xx:size, yy:size}).setFill([180, 180, 180, alpha]);
+    p.shadows[i].setTransform({dx: p.coords[i][0] * p.scale + p.centre.x, dy: (-p.coords[i][2] /5 + p.range*0.75) * p.scale + p.centre.y, xx:size, yy:size}).setFill([180, 180, 180, alpha]);
   }
 }
 var tl_mouse = {left:0, right:2, middle: 1};
