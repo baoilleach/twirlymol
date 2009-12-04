@@ -79,7 +79,7 @@ function tl_createAtoms(p) {
 		  colors:[{color:"white", offset:0},
 		          {color:[col[0], col[1], col[2], 1], offset:1}]});
     else
-        p.spheres[i].setFill([255, 255, 255,1]);
+        p.spheres[i].setFill([col[0], col[1], col[2], 1]);
     /*p.spheres[i] = p.surface.createGroup();
     p.spheres[i].createCircle({cx: 0, cy: 0, r: radius})
         .setFill([col[0], col[1], col[2], 1]);
