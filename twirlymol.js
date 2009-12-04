@@ -116,14 +116,14 @@ function tl_drawAtomsAndBonds(p) {
           var sphere = p.spheres[max];
           sphere.setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
           var col = tl_CPK[p.elements[max]];
+          var alpha = 1.0;
+          if (p.coords[max][2] > 0) alpha = 1.0 - p.coords[max][2] / 5;
           if (p.elements[max]!=1) {
-              var radius = 10;
-              var scalespot = p.coords[max][2] / 5 + 0.3;
-              if (p.coords[max][2] < 0) scalespot = 0.3;
-              sphere.setFill({type:"radial", cx:-2, cy:-3, r:scalespot * p.scale,
-		      colors:[{color:[226, 226, 226], offset:0},
-		              {color:[col[0], col[1], col[2], 1], offset:1}]});
+              sphere.setFill({type:"radial", cx:-2, cy:-3, r:7,
+		      colors:[{color:[255, 255, 255, alpha], offset:0},
+		              {color:[col[0], col[1], col[2], alpha], offset:1}]});
           }
+	  else sphere.setFill([col[0], col[1], col[2], alpha]);
     }
     else { // Draw bond
       start = p.coords[p.bonds[max][0]];
@@ -141,11 +141,15 @@ function tl_drawAtomsAndBonds(p) {
         rstart[j] = startrad*dx + start[j];
         rend[j] = end[j] - endrad*dx;
       }
+      var alpha = 1.0;
+      if (temp[i].depth > 0) alpha = 1.0 - temp[i].depth / 5;
       p.lines[max].setShape({x1:rstart[0] * p.scale + p.centre.x,
                            y1:rstart[1] * p.scale + p.centre.y,
                            x2:rend[0] * p.scale + p.centre.x,
                            y2:rend[1] * p.scale + p.centre.y})
-                   .setStroke({width:p.scale * ((order-1)*2+1) / 10}).moveToFront();
+                   .setStroke({width:p.scale * ((order-1)*2+1) / 10,
+			       color:[0,0,0,alpha]})
+		   .moveToFront();
     }
   }
 }
