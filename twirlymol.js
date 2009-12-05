@@ -113,17 +113,20 @@ function tl_drawAtomsAndBonds(p) {
   for (i=0; i<temp.length; i++) {
     var max = temp[i].idx;
     if (temp[i].type == "atom") { // Draw atom
-          var sphere = p.spheres[max];
-          sphere.setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
-          var col = tl_CPK[p.elements[max]];
-          var alpha = 1.0;
-          if (p.coords[max][2] > 0) alpha = 1.0 - p.coords[max][2] / 5;
-          if (p.elements[max]!=1) {
-              sphere.setFill({type:"radial", cx:-2, cy:-3, r:7,
-		      colors:[{color:[255, 255, 255, alpha], offset:0},
-		              {color:[col[0], col[1], col[2], alpha], offset:1}]});
-          }
-	  else sphere.setFill([col[0], col[1], col[2], alpha]);
+      var sphere = p.spheres[max];
+      sphere.setTransform({dx: p.centre.x + p.coords[max][0] * p.scale, dy: p.centre.y + p.coords[max][1] * p.scale, xx:scale , yy:scale}).moveToFront();
+      var col = tl_CPK[p.elements[max]];
+      if (p.fog) {
+        var alpha = 1.0;
+        if (p.coords[max][2] > 0) alpha = 1.0 - p.coords[max][2] / p.radius;
+        if (p.elements[max]!=1) {
+            sphere.setFill({type:"radial", cx:-2, cy:-3, r:7,
+        colors:[{color:[255, 255, 255, alpha], offset:0},
+                {color:[col[0], col[1], col[2], alpha], offset:1}]});
+        }
+        else
+          sphere.setFill([col[0], col[1], col[2], alpha]);
+      }
     }
     else { // Draw bond
       start = p.coords[p.bonds[max][0]];
@@ -142,7 +145,7 @@ function tl_drawAtomsAndBonds(p) {
         rend[j] = end[j] - endrad*dx;
       }
       var alpha = 1.0;
-      if (temp[i].depth > 0) alpha = 1.0 - temp[i].depth / 5;
+      if (temp[i].depth > 0) alpha = 1.0 - temp[i].depth / p.radius;
       p.lines[max].setShape({x1:rstart[0] * p.scale + p.centre.x,
                            y1:rstart[1] * p.scale + p.centre.y,
                            x2:rend[0] * p.scale + p.centre.x,
@@ -251,12 +254,17 @@ function tl_centreMol(p) {
     if(max[j]-min[j] > maxrange) maxrange = max[j] - min[j];
   }
   var scale = size * 7.6 / (240 * maxrange); 
+  var sqrdist = 0;
+  var sqrrad = 0;
   for(i=0; i < p.atoms.length; i++) {
     for(j=0;j<3;j++) {
       p.atoms[i][j] = p.atoms[i][j] - mean[j];
     }
+    sqrdist = p.atoms[i][0]*p.atoms[i][0] + p.atoms[i][1]*p.atoms[i][1] +
+           p.atoms[i][2]*p.atoms[i][2];
+    if (sqrdist>sqrrad) sqrrad=sqrdist;
   }
-  return {scale: scale, range: maxrange};
+  return {scale: scale, range: maxrange, radius:Math.sqrt(sqrrad)};
 }
 function tl_rotateAround(p) {
   // Rotate around X
@@ -288,8 +296,10 @@ function tl_rotateAround(p) {
 }
 var tl_CPK = [[-1, -1, -1], [255, 255, 255], [216, 255, 255], [204, 127, 255], [193, 255, 0], [255, 181, 181], [127, 127, 127], [12, 12, 255], [255, 12, 12], [178, 255, 255], [178, 226, 244], [170, 91, 242], [137, 255, 0], [191, 165, 165], [127, 153, 153], [255, 127, 0], [255, 255, 48], [30, 239, 30], [127, 209, 226], [142, 63, 211], [61, 255, 0], [229, 229, 229], [191, 193, 198], [165, 165, 170], [137, 153, 198], [155, 122, 198], [127, 122, 198], [112, 122, 198], [91, 122, 193], [255, 122, 96], [124, 127, 175], [193, 142, 142], [102, 142, 142], [188, 127, 226], [255, 160, 0], [165, 40, 40], [91, 183, 209], [112, 45, 175], [0, 255, 0], [147, 255, 255], [147, 224, 224], [114, 193, 201], [84, 181, 181], [58, 158, 158], [35, 142, 142], [10, 124, 140], [0, 104, 132], [224, 224, 255], [255, 216, 142], [165, 117, 114], [102, 127, 127], [158, 99, 181], [211, 122, 0], [147, 0, 147], [66, 158, 175], [86, 22, 142], [0, 201, 0], [112, 211, 255], [255, 255, 198], [216, 255, 198], [198, 255, 198], [163, 255, 198], [142, 255, 198], [96, 255, 198], [68, 255, 198], [48, 255, 198], [30, 255, 198], [0, 255, 155], [0, 229, 117], [0, 211, 81], [0, 191, 56], [0, 170, 35], [76, 193, 255], [76, 165, 255], [33, 147, 214], [38, 124, 170], [38, 102, 150], [22, 84, 135], [244, 237, 209], [204, 209, 30], [181, 181, 193], [165, 84, 76], [86, 89, 96], [158, 79, 181], [170, 91, 0], [117, 79, 68], [66, 130, 150], [66, 0, 102], [0, 124, 0], [112, 170, 249], [0, 186, 255], [0, 160, 255], [0, 142, 255], [0, 127, 255], [0, 107, 255], [84, 91, 242], [119, 91, 226], [137, 79, 226], [160, 53, 211], [178, 30, 211], [178, 30, 186], [178, 12, 165], [188, 12, 135], [198, 0, 102], [204, 0, 89], [209, 0, 79], [216, 0, 68], [224, 0, 56], [229, 0, 45], [232, 0, 38], [234, 0, 35], [237, 0, 33], [239, 0, 30], [242, 0, 28], [244, 0, 25], [247, 0, 22], [249, 0, 20], [252, 0, 17], [255, 0, 15]];
 //tl_CPK[1] = [0, 0, 0];
-function twirlyMol(elemID, atoms, bonds, elements){
+function twirlyMol(elemID, atoms, bonds, elements, fog){
+  if (fog == null) fog = true; // Default value
   function min(x,y) {if(x<y)return x; else return y;}
+
   var container = dojo.byId(elemID);
   var w = container.getAttribute("width");
   var h = container.getAttribute("height");
@@ -303,9 +313,10 @@ function twirlyMol(elemID, atoms, bonds, elements){
        surface: surface, atoms:atoms, bonds:bonds,
        scale: min(h,w) / 20, width:w, height:h,
        coords:coords, mymousedown:-1, container_pos:container_pos,
-       centre:centre};
+       centre:centre, fog:fog};
   var sizes = tl_centreMol(container.p);
   container.p.range = sizes.range;
+  container.p.radius = sizes.radius;
   container.p.spheres = Array(atoms.length);
   container.p.shadows = Array(atoms.length);
   container.p.lines = Array(atoms.length);
