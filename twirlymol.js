@@ -301,8 +301,15 @@ function twirlyMol(elemID, atoms, bonds, elements, fog){
   function min(x,y) {if(x<y)return x; else return y;}
 
   var container = dojo.byId(elemID);
-  var w = container.getAttribute("width");
-  var h = container.getAttribute("height");
+  var w = dojo.style(elemID, "width");
+  var h = dojo.style(elemID, "height");
+  // Drop back to legacy div height and width attributes if div style
+  // height (only) not set. NB div style width defaults to 100% if not set.
+  if (h == 0) {
+    w = container.getAttribute("width");
+    h = container.getAttribute("height");
+  }
+  
   var surface = dojox.gfx.createSurface(container, w, h);
   var container_pos = dojo.coords(container, true);
   var centre = {x: w/2, y:h/2};
