@@ -27,8 +27,8 @@ function parseSD(sdf) {
     var x = parseFloat(lines[i].substring(0, 10));
     var y = parseFloat(lines[i].substring(10, 20));
     var z = parseFloat(lines[i].substring(20, 30));
-    var e = lines[i].substring(30, 32);
-    e = e.replace(/^\s+|\s+$/g, '')
+    var e = lines[i].substring(31, 34);
+    e = e.replace(/\s+/g, '')
     atoms[i-4] = [x, y, z];
     for(var j=0; j<lookupelem.length; j++){
         if(lookupelem[j]==e){
